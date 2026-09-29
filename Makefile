@@ -40,3 +40,25 @@ train-ljspeech-min: ## Train the model with minimum memory
 
 start_app: ## Start the app
 	python matcha/app.py
+
+# ---------- TTS web app (FastAPI + SvelteKit) ----------
+VENV ?= venv
+PY := $(VENV)/bin/python
+API_PORT ?= 8000
+WEB_PORT ?= 5173
+
+install: ## Install backend (editable) and frontend dependencies
+	$(PY) -m pip install -e . --no-deps
+	$(PY) -m pip install fastapi uvicorn
+	cd web && bun install
+
+backend: ## Start FastAPI TTS server (http://localhost:8000/docs)
+	$(PY) -m uvicorn server.main:app --host 0.0.0.0 --port $(API_PORT) --reload --reload-dir server
+
+frontend: ## Start SvelteKit dev server (http://localhost:5173)
+	cd web && bun run dev --port $(WEB_PORT)
+
+dev: ## Start backend and frontend together (Ctrl+C stops both)
+	@$(MAKE) -j2 backend frontend
+
+.PHONY: help clean install backend frontend dev

@@ -15,7 +15,6 @@ import logging
 import re
 
 import phonemizer
-import piper_phonemize
 from unidecode import unidecode
 
 # To avoid excessive logging we set the log level of the phonemizer package to Critical
@@ -106,6 +105,8 @@ def kyrgyz_cleaners(text):
 
 def english_cleaners_piper(text):
     """Pipeline for English text, including abbreviation expansion. + punctuation + stress"""
+    import piper_phonemize  # optional: no macOS wheels on PyPI
+
     text = convert_to_ascii(text)
     text = lowercase(text)
     text = expand_abbreviations(text)
